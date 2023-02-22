@@ -1,0 +1,17 @@
+{
+  "name": "myFirstFunction",
+  "version": "1.0.0",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "esbuild getAllDiseasesData.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbuild": "cd dist && zip -r index.zip index.js*"
+  },
+  "dependencies": {
+    "compress-json": "^2.1.2",
+    "mongodb": "latest"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.110",
+    "esbuild": "^0.17.10"
+  }
+}
