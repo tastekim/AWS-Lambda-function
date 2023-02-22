@@ -1,4 +1,4 @@
-# Diseases WIKI - AWS Lambda function
+# AWS Lambda function
 
 ## Usage
 1. Change the name of the file to be transferred to the `npm run build` command in `package.json`.
