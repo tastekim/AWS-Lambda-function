@@ -2,26 +2,19 @@ import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import { MongoClient } from 'mongodb';
 import { compress } from 'compress-json';
 
-let cachedDb = null;
-
 async function connectToDatabase() {
-    if (cachedDb) {
-        return cachedDb;
-    }
-
     // Connect to our MongoDB database hosted on MongoDB Atlas
-    const client = await MongoClient.connect(process.env.MONGODB_URI);
+    const client = await MongoClient.connect(`${process.env.MONGODB_URI}`);
 
     // Specify which database we want to use
-    const db = await client.db('sample_mflix');
+    const db = await client.db('sample_illcyclopedia');
 
-    cachedDb = db;
     return db;
 }
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     const db = await connectToDatabase();
-    const movies = await db.collection('theaters').find({}).toArray();
+    const movies = await db.collection('diseases').find({}).toArray();
     const comp: unknown = event.queryStringParameters;
 
     if (typeof comp === 'undefined') {
