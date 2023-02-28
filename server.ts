@@ -3,14 +3,15 @@ import express, { Request, Response } from 'express';
 import { handler as getDiseasesData } from './getDiseasesData';
 import { handler as getAllDiseasesData } from './getAllDiseasesData';
 
+import { decompress } from 'compress-json';
+
 const app = express();
 
-app.get('/getAllDiseasesData', async (req: any, res: any) => {
+app.get('/getAll', async (req: any, res: any) => {
     try {
         req.queryStringParameters = req.query;
         const allData = await getAllDiseasesData(req, res);
-        console.log(JSON.parse(allData.body));
-        res.status(200 || allData.statusCode).send(allData);
+        res.status(allData.statusCode).send(allData);
     } catch (err) {
         if (err instanceof Error) {
             console.error(err);
@@ -20,12 +21,19 @@ app.get('/getAllDiseasesData', async (req: any, res: any) => {
 
 });
 
-app.get('/getDiseasesData', async (req: Request, res: Response) => {
-    // const data = await getDiseasesData(, res);
-    // console.log(data);
-    res.status(200).send({
-        message : 'Ok.',
-    });
+app.get('/getOne', async (req: any, res: any) => {
+    try {
+        req.queryStringParameters = req.query;
+        const data = await getDiseasesData(req, res)
+        res.status(data.statusCode).send({
+            body: JSON.parse(data.body)
+        });
+    } catch (err) {
+        if (err instanceof Error) {
+            console.error(err);
+            res.status(500).send({ message : err.message });
+        }
+    }
 });
 
 app.listen(process.env.PORT, () => console.log('listening on port ' + process.env.PORT));

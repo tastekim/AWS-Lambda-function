@@ -1,29 +1,35 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { MongoClient } from 'mongodb';
+import { getDiseasesData } from './mongodb-modules';
 
-let cachedDb = null;
-
-async function connectToDatabase() {
-    if (cachedDb) {
-        return cachedDb;
-    }
-
-    // Connect to our MongoDB database hosted on MongoDB Atlas
-    const client = await MongoClient.connect(`${process.env.MONGODB_URI}`);
-
-    // Specify which database we want to use
-    const db = await client.db('sample_mflix');
-
-    cachedDb = db;
-    return db;
+interface QueryStringParam {
+    docId: string;
 }
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
-    const { theaterId } = event.queryStringParameters;
-    const db = await connectToDatabase();
-    const movies = await db.collection('theaters').findOne({"theaterId" : Number(theaterId)});
-    return {
-        statusCode : 200,
-        body : JSON.stringify(movies),
-    };
+interface ModifiedAPIGatewayEvent {
+    queryStringParameters: QueryStringParam;
+}
+
+export const handler = async (event: ModifiedAPIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+    try {
+        const { docId } = event.queryStringParameters || {};
+        const data = await getDiseasesData(docId);
+
+        if (!data) {
+            return {
+                statusCode : 500,
+                body : JSON.stringify(data),
+            };
+        } else {
+            return {
+                statusCode : 200,
+                body : JSON.stringify(data),
+            };
+        }
+    } catch (err) {
+        console.error(err);
+        return {
+            statusCode : 500,
+            body : JSON.stringify({ message : err instanceof Error ? err.message : err }),
+        };
+    }
 };

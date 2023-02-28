@@ -1,23 +1,25 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import { compress } from 'compress-json';
-import { connectToDatabase } from './db-connect';
+import { getAllDiseasesData } from './mongodb-modules';
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+interface QueryStringParam {
+    comp?: string;
+}
+
+interface ModifiedAPIGatewayEvent {
+    queryStringParameters: QueryStringParam;
+}
+
+export const handler = async (event: ModifiedAPIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     try {
-        const db = await connectToDatabase();
-        const movies = await db.collection('diseases').find({}).toArray();
-        const { comp } = event?.queryStringParameters || {};
-        if (comp === 'F' || comp === 'T' || typeof comp === 'undefined') {
-            return {
-                statusCode : 200,
-                body : JSON.stringify(comp ==='F' ? movies : compress(movies))
-            }
-        } else {
-            return {
-                statusCode : 404,
-                body : JSON.stringify({message: 'Invalid query string.'})
-            }
-        }
+        const allData = await getAllDiseasesData();
+        const { comp } = event.queryStringParameters || {};
+        const resBody = {data: allData}
+
+        return {
+            statusCode : 200,
+            body : JSON.stringify(comp === 'f' ? resBody : compress(resBody)),
+        };
     } catch (err) {
         console.error(err);
         return {
