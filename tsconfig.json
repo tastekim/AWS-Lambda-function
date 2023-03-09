@@ -5,6 +5,7 @@
     "declaration": true,
     "outDir": "dist",
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "strict": true,
     "noImplicitAny": false,
     "moduleResolution": "node",

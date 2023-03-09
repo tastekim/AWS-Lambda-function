@@ -10,7 +10,7 @@ export async function connectToDatabase() {
     const client = await MongoClient.connect(`${process.env.MONGODB_URI}`);
 
     // Specify which database we want to use
-    const db = await client.db('sample_illcyclopedia');
+    const db = await client.db('illcyclopedia');
     conn = db
     return db;
 }
