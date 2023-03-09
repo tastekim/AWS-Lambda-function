@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { handler as getDiseasesData } from './getDiseasesData';
 import { handler as getAllDiseasesData } from './getAllDiseasesData';
 import { uploadImg, getFileUrl } from './gcs-modules';
-import { setImgData, getDiseaseImages } from './mongodb-modules';
+import { setImgData, getDiseaseImages, getSeasonImg } from './mongodb-modules';
 
 import { decompress } from 'compress-json';
 import bodyParser from 'body-parser';
@@ -75,6 +75,11 @@ app.post('/uploadimgs', (req: any, res: any, next) => {
         }
     }
 });
+
+app.get('/test', async (req, res) => {
+    const data = await getSeasonImg()
+    res.json({data})
+})
 
 app.listen(process.env.PORT, () => console.log('listening on port ' + process.env.PORT));
 
