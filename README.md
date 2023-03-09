@@ -1,4 +1,4 @@
-# AWS Lambda function
+# DiseasesWIKI - AWS Lambda function
 
 ## Usage
 1. Test in a local environment with the command `npm run local`.
