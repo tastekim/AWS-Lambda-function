@@ -76,10 +76,5 @@ app.post('/uploadimgs', (req: any, res: any, next) => {
     }
 });
 
-app.get('/test', async (req, res) => {
-    const data = await getSeasonImg()
-    res.json({data})
-})
-
 app.listen(process.env.PORT, () => console.log('listening on port ' + process.env.PORT));
 

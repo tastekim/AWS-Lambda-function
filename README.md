@@ -1,5 +1,9 @@
 # DiseasesWIKI - AWS Lambda function
 
+## Requierements
+* firebase-sdk keyFile
+* configure env
+
 ## Usage
 1. Test in a local environment with the command `npm run local`.
 2. Create a bundle for AWS lambda function with the command `npm run build:getAll` or `npm run build:getOne`, `npm run build:img`. 
@@ -7,7 +11,7 @@
 4. Image files can be uploaded to path `/uploadimgs` on local environment.
 5. Content type of image files is multipart/mixed and require this fields => ```{file : file, title : text, season : text, category1 : text, category2 : text, created_at : text, } ```
 
-## API
+## Lambda API
 `BASE_URL=https://lgd0lbex7b.execute-api.ap-northeast-2.amazonaws.com/default`
 
 >[GET] /getAllDiseasesData
