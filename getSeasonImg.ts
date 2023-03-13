@@ -1,5 +1,5 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { getAllDiseasesData, getSeasonImg } from './mongodb-modules';
+import { getSeasonImg } from './mongodb-modules';
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     try {
