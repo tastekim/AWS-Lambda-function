@@ -1,8 +1,6 @@
 import { storage } from './gcs-connect';
 import { connectToDatabase } from './db-connect';
 
-import * as hangul from 'hangul-js';
-
 const categoryMap = {
     '감염성질환' : 'gysjh',
     '건강증진' : 'ggjj',
@@ -40,24 +38,39 @@ export async function uploadImg(filename, filepath) {
 
 export async function getFileUrl(doc) {
     try {
-        let category = doc.category1
+        const bucket = storage.bucket('diseaseswiki.appspot.com');
+
         let mappingCategory;
         for (const key in categoryMap) {
-            if (key == category) {
+            if (key == doc.category1) {
                 mappingCategory = categoryMap[key];
             }
         }
 
-        if (mappingCategory === undefined || doc.filename === undefined || category === undefined) {
-            throw new Error(`Invalid mapping category.`);
-        }
+        // thumbnail image url
+        let file = bucket.file(`thumbnails/${doc.filename}`)
+        const [thumbnailUrl] = await file.getSignedUrl({
+            action : 'read',
+            expires : Date.now() + Date.now(),
+        });
 
-        const url = {
-            thumbnailUrl : `https://storage.cloud.google.com/diseaseswiki.appspot.com/thumbnails/${encodeURI(doc.filename)}`,
-            webzineUrl : `https://storage.cloud.google.com/diseaseswiki.appspot.com/webzines/${encodeURI(doc.filename)}`,
-            topImageUrl : `https://storage.cloud.google.com/diseaseswiki.appspot.com/topimages/${mappingCategory}.jpg`,
+        // webzine image url
+        file = bucket.file(`webzines/${doc.filename}`)
+        const [webzineUrl] = await file.getSignedUrl({
+            action : 'read',
+            expires : Date.now() + Date.now(),
+        })
+
+        // top image url
+        file = bucket.file(`topimages/${mappingCategory}.jpg`)
+        const [topImageUrl] = await file.getSignedUrl({
+            action : 'read',
+            expires : Date.now() + Date.now(),
+        })
+
+        return {
+            thumbnailUrl, webzineUrl, topImageUrl
         }
-        return url;
     } catch (err) {
         if (err instanceof Error) {
             console.error(err);
@@ -93,43 +106,12 @@ export async function allContentsChange() {
         const bucket = storage.bucket('diseaseswiki.appspot.com');
 
         const result = mongoAll.forEach(async (data) => {
-            const id = data._id;
-            const title = data.title;
-            const category = data.category1;
-            const filename = data.filename;
-            let mappingCategory;
-
-            for (const key in categoryMap) {
-                if (key == category) {
-                    mappingCategory = categoryMap[key];
-                }
-            }
-
-            if (mappingCategory === undefined || title === undefined || category === undefined) {
-                throw new Error(`Invalid mapping category.`);
-            }
-
-            let thumbnailUrl = `https://storage.cloud.google.com/diseaseswiki.appspot.com/thumbnails/${encodeURI(filename)}`;
-            let webzineUrl = `https://storage.cloud.google.com/diseaseswiki.appspot.com/webzines/${encodeURI(filename)}`;
-            let topImageUrl = `https://storage.cloud.google.com/diseaseswiki.appspot.com/topimages/${mappingCategory}.jpg`;
-
-            await db.collection('disease-images').findOneAndUpdate({ _id : id }, {
+            const url = await getFileUrl(data);
+            await db.collection('disease-images').findOneAndUpdate({ _id : data._id }, {
                 $set : {
-                    url : {
-                        thumbnailUrl,
-                        webzineUrl,
-                        topImageUrl
-                    }
+                    url : url
                 }
             });
-            return {
-                id,
-                title,
-                category,
-                thumbnailUrl,
-                webzineUrl,
-                topImageUrl
-            };
         });
         return result;
     } catch (err) {
