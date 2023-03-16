@@ -1,16 +1,19 @@
 import { connectToDatabase } from './db-connect';
 import { shuffle } from 'fast-shuffle';
 import { ObjectId } from 'mongodb';
+import { getTopImageUrl } from './gcs-modules';
 
 export async function getDiseasesData(docId) {
     try {
         const db = await connectToDatabase();
         const data = await db.collection('diseases').findOne({ _id : docId });
         let img = await getDiseaseImages(data?.category);
+        const topImg = await getTopImageUrl(data);
+
         let arr;
         // 관련 카테고리 이미지
         if (!(img instanceof Array)) {
-            throw new Error('Not exist Disease images.')
+            throw new Error('Not exist Disease images.');
         }
         const sharr = shuffle(img);
         arr = sharr.slice(0, 3);
@@ -25,7 +28,7 @@ export async function getDiseasesData(docId) {
                 i++;
             }
         }
-        return { data, arr };
+        return { data, topImg, arr };
     } catch (err) {
         if (err instanceof Error) {
             return {
@@ -104,6 +107,25 @@ export async function setImgData(doc, url) {
             category2 : doc.category2,
             url : url
 
+        });
+    } catch (err) {
+        if (err instanceof Error) {
+            return {
+                statusCode : 500,
+                message : err.message,
+            };
+        }
+    }
+}
+
+export async function setDiseasesData_topImg() {
+    try {
+        const db = await connectToDatabase();
+        const allData = await db.collection('diseases').find({}).toArray();
+        allData.forEach(async (doc) => {
+            const topImg = await getTopImageUrl(doc);
+            const updateData = await db.collection('diseases').findOneAndUpdate({ _id : doc._id }, { $set : { topImg } });
+            console.log(updateData)
         });
     } catch (err) {
         if (err instanceof Error) {

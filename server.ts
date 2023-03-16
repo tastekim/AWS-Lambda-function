@@ -12,6 +12,7 @@ import {
     setImgData,
     getDiseaseImages,
     getSeasonImg,
+    setDiseasesData_topImg,
 } from './mongodb-modules';
 
 import { decompress } from 'compress-json';
@@ -97,11 +98,22 @@ app.get('/getSeasonImg', async (req: any, res: any) => {
 });
 
 // 질병 document 업데이트 시, google cloud storage 에 해당 이미지 파일 업로드 후 실행해서 맞는 카테고리 및 파일 이미지 매핑.
-app.get('/diseaseImgMapping', async (req, res) => {
+app.get('/diseaseImgMapping', async (req: any, res: any) => {
     try {
         // disease-images collection의 document의 url 한번에 전체 수정 -> doc에 해당하는 thumbnail, top-image, webzine image url mapping.
         const result = await allContentsChange();
         res.json(result);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ err });
+    }
+});
+
+// 질병 데이터에 top image 추가(전체에 실행)
+app.get('/setDiseasesTopImage', async (req: any, res: any) => {
+    try {
+        await setDiseasesData_topImg();
+        res.json({ message : 'success' });
     } catch (err) {
         console.log(err);
         res.status(500).json({ err });

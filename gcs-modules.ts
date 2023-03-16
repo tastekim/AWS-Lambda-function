@@ -8,16 +8,16 @@ const categoryMap = {
     '기타' : 'gt',
     '뇌/신경/정신질환' : 'nsgjsjh',
     '눈/코/귀/인후/구강/치아' : 'nkgihggca',
-    '소아/신생아질환' : 'sassajh',
-    '소화기계질환' : 'shggjh',
-    '순화기(심혈관계)질환' : 'shgshggjh',
-    '신장/비뇨기계질환' : 'sjbnggjh',
+    '소아/신생아 질환' : 'sassajh',
+    '소화기계 질환' : 'shggjh',
+    '순환기(심혈관계)질환' : 'shgshggjh',
+    '신장/비뇨기계 질환' : 'sjbnggjh',
     '여성질환' : 'ysjh',
     '유방/내분비질환' : 'ybnbbjh',
-    '유전' : 'yj',
+    '유전질환' : 'yj',
     '응급질환' : 'ugjh',
     '피부/미용/성형 질환' : 'pbmyshjh',
-    '혈액/종양질환' : 'hejyjh',
+    '혈액/종양 질환' : 'hejyjh',
     '호흡기질환' : 'hhgjh',
 };
 
@@ -40,13 +40,6 @@ export async function getFileUrl(doc) {
     try {
         const bucket = storage.bucket('diseaseswiki.appspot.com');
 
-        let mappingCategory;
-        for (const key in categoryMap) {
-            if (key == doc.category1) {
-                mappingCategory = categoryMap[key];
-            }
-        }
-
         // thumbnail image url
         let file = bucket.file(`thumbnails/${doc.filename}`)
         const [thumbnailUrl] = await file.getSignedUrl({
@@ -61,16 +54,36 @@ export async function getFileUrl(doc) {
             expires : Date.now() + Date.now(),
         })
 
+        return {
+            thumbnailUrl, webzineUrl
+        }
+    } catch (err) {
+        if (err instanceof Error) {
+            console.error(err);
+            return err;
+        }
+    }
+}
+
+export async function getTopImageUrl(doc) {
+    try {
+        const bucket = storage.bucket('diseaseswiki.appspot.com');
+
+        let mappingCategory;
+        for (const key in categoryMap) {
+            if (key == doc.category) {
+                mappingCategory = categoryMap[key];
+            }
+        }
+        
         // top image url
-        file = bucket.file(`topimages/${mappingCategory}.jpg`)
+        const file = bucket.file(`topimages/${mappingCategory}.jpg`)
         const [topImageUrl] = await file.getSignedUrl({
             action : 'read',
             expires : Date.now() + Date.now(),
         })
-
-        return {
-            thumbnailUrl, webzineUrl, topImageUrl
-        }
+        
+        return topImageUrl
     } catch (err) {
         if (err instanceof Error) {
             console.error(err);
