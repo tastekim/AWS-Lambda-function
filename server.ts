@@ -38,9 +38,10 @@ app.get('/getAll', async (req: any, res: any) => {
 
 });
 
-app.get('/getOne', async (req: any, res: any) => {
+app.post('/getOne', async (req: any, res: any) => {
     try {
         req.queryStringParameters = req.query;
+        console.log(req)
         const data = await getDiseasesData(req, res);
         res.status(data.statusCode).send({
             body : JSON.parse(data.body)

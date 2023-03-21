@@ -1,17 +1,24 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { getDiseasesData } from './mongodb-modules';
+import { getDiseasesData, updateDiseaseData } from './mongodb-modules';
 
 interface QueryStringParam {
     docId: string;
+    admin: string;
 }
 
 interface ModifiedAPIGatewayEvent {
     queryStringParameters: QueryStringParam;
+    body: any;
 }
 
 export const handler = async (event: ModifiedAPIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     try {
-        const { docId } = event.queryStringParameters || {};
+        const { docId, admin } = event.queryStringParameters || {};
+
+        if (typeof event.body === 'string' && admin === 'true') {
+            const updateDoc = JSON.parse(event.body)
+            await updateDiseaseData(docId, updateDoc);
+        }
         const data = await getDiseasesData(docId);
 
         if (!data) {

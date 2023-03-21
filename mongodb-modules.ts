@@ -70,7 +70,6 @@ export async function getSeasonImg() {
             season = '겨울';
         }
         const data = await db.collection('disease-images').find({ $or : [{ season : '전체' }, { season : season }] }).toArray();
-        console.log(data);
         const shuffleArr = shuffle(data);
         return shuffleArr.slice(0, 3);
     } catch (err) {
@@ -125,8 +124,31 @@ export async function setDiseasesData_topImg() {
         allData.forEach(async (doc) => {
             const topImg = await getTopImageUrl(doc);
             const updateData = await db.collection('diseases').findOneAndUpdate({ _id : doc._id }, { $set : { topImg } });
-            console.log(updateData)
+            console.log(updateData);
         });
+    } catch (err) {
+        if (err instanceof Error) {
+            return {
+                statusCode : 500,
+                message : err.message,
+            };
+        }
+    }
+}
+
+export async function updateDiseaseData(docId, newData) {
+    try {
+        const db = await connectToDatabase();
+        const result = await db.collection('diseases').findOneAndUpdate({ _id : docId }, {
+            $set : {
+                disease_name: newData.disease_name,
+                definition : newData.definition,
+                cause_symptom : newData.cause_symptom,
+                care : newData.care
+
+            }
+        });
+        return result;
     } catch (err) {
         if (err instanceof Error) {
             return {
