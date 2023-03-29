@@ -7,6 +7,7 @@
     "build:getAll": "esbuild getAllDiseasesData.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js && npm run postbuild",
     "build:getOne": "esbuild getDiseasesData.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js && npm run postbuild",
     "build:seasonImg": "esbuild getSeasonImg.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js && npm run postbuild",
+    "build:update": "esbuild updateAllData.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js && npm run postbuild",
     "postbuild": "cd dist && zip -r index.zip index.js*"
   },
   "dependencies": {
