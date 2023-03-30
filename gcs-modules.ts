@@ -41,22 +41,22 @@ export async function getFileUrl(doc) {
         const bucket = storage.bucket('diseaseswiki.appspot.com');
 
         // thumbnail image url
-        let file = bucket.file(`thumbnails/${doc.filename}`)
+        let file = bucket.file(`thumbnails/${doc.filename}`);
         const [thumbnailUrl] = await file.getSignedUrl({
             action : 'read',
             expires : Date.now() + Date.now(),
         });
 
         // webzine image url
-        file = bucket.file(`webzines/${doc.filename}`)
+        file = bucket.file(`webzines/${doc.filename}`);
         const [webzineUrl] = await file.getSignedUrl({
             action : 'read',
             expires : Date.now() + Date.now(),
-        })
+        });
 
         return {
             thumbnailUrl, webzineUrl
-        }
+        };
     } catch (err) {
         if (err instanceof Error) {
             console.error(err);
@@ -75,15 +75,15 @@ export async function getTopImageUrl(doc) {
                 mappingCategory = categoryMap[key];
             }
         }
-        
+
         // top image url
-        const file = bucket.file(`topimages/${mappingCategory}.jpg`)
+        const file = bucket.file(`topimages/${mappingCategory}.jpg`);
         const [topImageUrl] = await file.getSignedUrl({
             action : 'read',
             expires : Date.now() + Date.now(),
-        })
-        
-        return topImageUrl
+        });
+
+        return topImageUrl;
     } catch (err) {
         if (err instanceof Error) {
             console.error(err);
@@ -114,7 +114,7 @@ export async function getAllFiles(prefix) {
 export async function allContentsChange() {
     try {
         const db = await connectToDatabase();
-        const mongoAll = await db.collection('disease-images').find({}).toArray();
+        const mongoAll: any = await db.collection('disease-images').find({}).toArray();
 
         const bucket = storage.bucket('diseaseswiki.appspot.com');
 

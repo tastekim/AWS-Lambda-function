@@ -70,3 +70,10 @@
 >       "https://storage.googleapis.com/diseaseswiki.appspot.com/202210_%E1%84%86%E1%85%A9%E1%84%87%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%8B%E1%85%B0%E1%86%B8%E1%84%8C%E1%85%B5%E1%86%AB_01%E1%84%87%E1%85%A9%E1%86%AB%E1%84%86%E1%85%AE%E1%86%AB.jpg?GoogleAccessId=firebase-adminsdk-go0ee%40diseaseswiki.iam.gserviceaccount.com&Expires=3356660469&Signature=skRXJDig2TH1o5Y3wemL%2FmWrk6xpnE2ojkNu0r0R8DMs%2BaX%2Br2NfdyjxIo5tbDBDrOcxgqTn8%2BLhd8BkKGJ93cxjkwazYtOSMxGziAL1qvmDTy5lgr9WPGt%2Fre%2Bfddisk4vZMeN4o63jKc4eXhuZbgVA%2FjennuJjg%2FbmK6QgENMKE%2B4iNMAWkjDnYdEmLiGIx05G17YagvK7Z35eJhJ0MQMYYHtGSaC3gCS5uIgmv2hjNPIHdJYuWSv7xCURxIZ9PBybXc0b9BB75HtsB8zdVZchRUy3FCb6sjf31aOE5hUFPJfd9GN%2BuXfIJp7I%2BSn%2FfGIlwaT94O6teCCfcR0w%2BQ%3D%3D"
 > }
 
+> [GET] /updateAllData
+> 
+> 요청 시 현재 데이터 이미지 매핑 업데이트
+> ```
+> {
+> message : 'Success process.'
+> }

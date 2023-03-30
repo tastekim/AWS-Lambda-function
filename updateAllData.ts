@@ -4,7 +4,7 @@ import { allContentsChange } from './gcs-modules';
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     try {
-        await allContentsChange();
+        const updateData1 = await allContentsChange();
         await setDiseasesData_topImg();
 
         return {

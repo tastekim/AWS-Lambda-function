@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import { handler as getDiseasesData } from './getDiseasesData';
 import { handler as getAllDiseasesData } from './getAllDiseasesData';
+import { handler as updateAllData } from './updateAllData';
 import {
     uploadImg,
     getFileUrl,
@@ -13,6 +14,7 @@ import {
     getDiseaseImages,
     getSeasonImg,
     setDiseasesData_topImg,
+    fixDiseaseCategoryData
 } from './mongodb-modules';
 
 import { decompress } from 'compress-json';
@@ -41,7 +43,7 @@ app.get('/getAll', async (req: any, res: any) => {
 app.post('/getOne', async (req: any, res: any) => {
     try {
         req.queryStringParameters = req.query;
-        console.log(req)
+        console.log(req);
         const data = await getDiseasesData(req, res);
         res.status(data.statusCode).send({
             body : JSON.parse(data.body)
@@ -117,6 +119,27 @@ app.get('/setDiseasesTopImage', async (req: any, res: any) => {
         res.json({ message : 'success' });
     } catch (err) {
         console.log(err);
+        res.status(500).json({ err });
+    }
+});
+
+app.get('/updateAllData', async (req: any, res: any) => {
+    try {
+        await updateAllData(req, res);
+        res.status(200).json({ message : 'success' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ err });
+    }
+});
+
+app.post('/fixData', async (req: any, res: any) => {
+    try {
+        const { originalText, fixedText } = req.body;
+        const result = await fixDiseaseCategoryData(originalText, fixedText);
+        res.status(200).json({ message : 'success', result: typeof result });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ err });
     }
 });

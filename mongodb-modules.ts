@@ -124,7 +124,6 @@ export async function setDiseasesData_topImg() {
         allData.forEach(async (doc) => {
             const topImg = await getTopImageUrl(doc);
             const updateData = await db.collection('diseases').findOneAndUpdate({ _id : doc._id }, { $set : { topImg } });
-            console.log(updateData);
         });
     } catch (err) {
         if (err instanceof Error) {
@@ -141,13 +140,28 @@ export async function updateDiseaseData(docId, newData) {
         const db = await connectToDatabase();
         const result = await db.collection('diseases').findOneAndUpdate({ _id : docId }, {
             $set : {
-                disease_name: newData.disease_name,
+                disease_name : newData.disease_name,
                 definition : newData.definition,
                 cause_symptom : newData.cause_symptom,
                 care : newData.care
 
             }
         });
+        return result;
+    } catch (err) {
+        if (err instanceof Error) {
+            return {
+                statusCode : 500,
+                message : err.message,
+            };
+        }
+    }
+}
+
+export async function fixDiseaseCategoryData(originalText, fixedText) {
+    try {
+        const db = await connectToDatabase();
+        const result = await db.collection('diseases').findOneAndUpdate({ category : originalText }, { $set : { category : fixedText } }, { returnDocument : 'after' });
         return result;
     } catch (err) {
         if (err instanceof Error) {
